@@ -3,6 +3,26 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
 # Database
 *.db
 *.sqlite3
