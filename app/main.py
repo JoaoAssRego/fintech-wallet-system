@@ -2,9 +2,26 @@ from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
+from contextlib import asynccontextmanager
 
 from app.config import settings
-from app.database import get_db, init_db
+from app.database import get_db, init_db, engine
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Gerencia startup e shutdown"""
+    # STARTUP
+    print("🚀 Iniciando aplicação...")
+    await init_db()
+    print("✅ Banco de dados inicializado!")
+    
+    yield  # App rodando aqui
+    
+    # SHUTDOWN
+    print("👋 Encerrando aplicação...")
+    await engine.dispose()
+    print("✅ Recursos liberados!")
 
 # Criar aplicação FastAPI
 app = FastAPI(
@@ -13,30 +30,8 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",      # Swagger UI
     redoc_url="/redoc",    # ReDoc
+    lifespan=lifespan    
 )
-
-
-@app.on_event("startup")
-async def startup_event():
-    """
-    Executado quando a aplicação inicia.
-    
-    Cria as tabelas no banco se não existirem.
-    """
-    print("🚀 Iniciando aplicação...")
-    await init_db()
-    print("✅ Banco de dados inicializado!")
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """
-    Executado quando a aplicação é encerrada.
-    
-    Limpeza de recursos, se necessário.
-    """
-    print("👋 Encerrando aplicação...")
-
 
 @app.get("/")
 async def root():
