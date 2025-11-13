@@ -12,24 +12,18 @@ from app.database import get_db, init_db, engine
 async def lifespan(app: FastAPI):
     """Gerencia startup e shutdown"""
     # STARTUP
-    print("🚀 Iniciando aplicação...")
     await init_db()
-    print("✅ Banco de dados inicializado!")
-    
+ 
     yield  # App rodando aqui
     
     # SHUTDOWN
-    print("👋 Encerrando aplicação...")
     await engine.dispose()
-    print("✅ Recursos liberados!")
 
 # Criar aplicação FastAPI
 app = FastAPI(
     title=settings.app_name,
     description="Sistema de Carteira Digital com FastAPI, PostgreSQL e JWT",
     version="1.0.0",
-    docs_url="/docs",      # Swagger UI
-    redoc_url="/redoc",    # ReDoc
     lifespan=lifespan    
 )
 
